@@ -205,6 +205,7 @@ with cols[2]:
     fig_min_samples_leaf.update_traces(mode='lines+markers', line=dict(color='#fbada1'))  
     st.plotly_chart(fig_min_samples_leaf)
 
+
 """MULTIPLE LINEAR REGRESSION SECTION!!!"""
 # Streamlit app
 st.header("Multiple Linear Regression")
@@ -293,26 +294,27 @@ with left_col:
         # Call the function to get MSE, R², etc. and plot
         mse, r2, adj_r2, coef_df, fig, comparison_df = train_and_display_linear_regression(selected_features)
 
-        # Display the metrics
+        # Display the model coefficients
+        st.write("**Model Coefficients:**")
+        st.write(coef_df)
+
+# Display visualization in the right column
+with right_col:
+    if fig is not None:
+        st.pyplot(fig)
+
+        # Display the metrics below the visualization
         if mse is not None:
             st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
             st.write(f"**R-squared (R²):** {r2:.4f}")
             st.write(f"**Adjusted R-squared:** {adj_r2:.4f}")
 
-            st.write("**Model Coefficients:**")
-            st.write(coef_df)
-    else:
-        st.write("Please select at least one feature to see the results.")
-
-# Display visualization and comparison DataFrame in the right column
-with right_col:
-    if fig is not None:
-        st.pyplot(fig)
-
-    # Display the sample of actual vs predicted values
-    if selected_features:
+        # Display the sample of actual vs predicted values
         st.write("**Sample of Actual vs Predicted Values:**")
         st.write(comparison_df.head())
+    else:
+        if not selected_features:
+            st.write("Please select at least one feature to see the results.")
 
 
 
