@@ -375,10 +375,10 @@ def create_hoverable_plot(df, predictor, response):
 st.title("SLR: Interactive Pairplots with Best Fit Line and Metrics")
 
 # Display the plots in a 5-column layout
-cols = st.columns(5)
+cols = st.columns(3)
 
 # Iterate through the numerical predictors and assign plots to each column
 for idx, predictor in enumerate(numerical_predictors):
-    with cols[idx % 5]:
+    with cols[idx % 3]:
         fig = create_hoverable_plot(possum_df_enc, predictor, 'totlngth')
         st.plotly_chart(fig)
