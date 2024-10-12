@@ -218,7 +218,7 @@ def adjusted_r2(r2, n, p):
 @st.cache_data
 def train_and_display_linear_regression(selected_features):
     if not selected_features:
-        return None, None, None, None, None, None
+        return None, None, None, None, None, None, None
 
     # Use training data for selected features
     X_train_selected = X_train[selected_features]
@@ -232,7 +232,6 @@ def train_and_display_linear_regression(selected_features):
 
     # Calculate metrics based on the training data
     mse = mean_squared_error(y_train, y_pred_train)
-    rmse = np.sqrt(mse)
     r2 = r2_score(y_train, y_pred_train)
 
     n = len(y_train)  # Number of observations in the training set
@@ -241,19 +240,12 @@ def train_and_display_linear_regression(selected_features):
 
     coef_df = pd.DataFrame({'Feature': selected_features, 'Coefficient': model.coef_})
 
-    # Create a range of values for y_train for the regression line
-    model_line = LinearRegression()
-    model_line.fit(y_train.values.reshape(-1, 1), y_pred_train)  # Reshape for sklearn
-
-    y_train_range = np.linspace(y_train.min(), y_train.max(), 100).reshape(-1, 1)
-    y_pred_line = model_line.predict(y_train_range)
-
     # Create the scatter plot
     fig, ax = plt.subplots(figsize=(10, 8))
     ax.scatter(y_train, y_pred_train, color='#fbada1')
 
     # Add a reference line (y = x)
-    ax.plot(y_train_range, y_pred_line, color='#81776d', linestyle='-', lw=2, label='Regression Line')
+    ax.plot(y_train, y_train, color='#81776d', linestyle='-', lw=2, label='Regression Line')
 
     # Set labels and title
     ax.set_xlabel('Actual (Training)', fontsize=12, color='#81776d', weight='bold')
@@ -274,16 +266,16 @@ def train_and_display_linear_regression(selected_features):
     ax.yaxis.set_label_coords(-0.1, 0.85)
 
     # Show the plot
-    plt.show()
+    plt.tight_layout()
 
     # Prepare comparison DataFrame for actual vs predicted values
     comparison_df = pd.DataFrame({'Actual': y_train, 'Predicted': y_pred_train})
 
-    return mse, rmse, r2, adj_r2, coef_df, fig, comparison_df
+    return mse, r2, adj_r2, coef_df, fig, comparison_df
 
 
 # Create columns for dropdown and visualization
-left_col, right_col = st.columns([1, 2])  # 1 part for dropdown, 2 parts for visualization
+left_col, right_col = st.columns([1, 2])  # 1 part for dropdown and metrics, 2 parts for visualization
 
 # Create dropdown in the left column
 with left_col:
@@ -294,23 +286,16 @@ with left_col:
         default=[]  # Start with no features selected
     )
 
-# Initialize empty plot variable
-fig = None
+    # Initialize empty plot variable
+    fig = None
 
-# Display visualization and results in real-time in the right column
-with right_col:
     if selected_features:
-        # Call the function to get MSE, RMSE, R², etc. and plot
-        mse, rmse, r2, adj_r2, coef_df, fig, comparison_df = train_and_display_linear_regression(selected_features)
+        # Call the function to get MSE, R², etc. and plot
+        mse, r2, adj_r2, coef_df, fig, comparison_df = train_and_display_linear_regression(selected_features)
 
-        # Display the plot first
-        if fig is not None:
-            st.pyplot(fig)
-
-        # Then display the metrics
+        # Display the metrics
         if mse is not None:
             st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
-            st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
             st.write(f"**R-squared (R²):** {r2:.4f}")
             st.write(f"**Adjusted R-squared:** {adj_r2:.4f}")
 
@@ -321,6 +306,11 @@ with right_col:
             st.write(comparison_df.head())
     else:
         st.write("Please select at least one feature to see the results.")
+
+# Display visualization in the right column
+with right_col:
+    if fig is not None:
+        st.pyplot(fig)
 
 
 
