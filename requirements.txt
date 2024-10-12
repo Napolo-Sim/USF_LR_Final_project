@@ -1,9 +1,6 @@
 numpy
 pandas
-matplotlib.pyplot
-sklearn.linear_model
-sklearn.tree 
-sklearn.model_selection
-sklearn.metrics
+matplotlib
+sklearn
 streamlit
-plotly.express
+plotly
