@@ -301,16 +301,19 @@ with left_col:
 
             st.write("**Model Coefficients:**")
             st.write(coef_df)
-
-            st.write("**Sample of Actual vs Predicted Values:**")
-            st.write(comparison_df.head())
     else:
         st.write("Please select at least one feature to see the results.")
 
-# Display visualization in the right column
+# Display visualization and comparison DataFrame in the right column
 with right_col:
     if fig is not None:
         st.pyplot(fig)
+
+    # Display the sample of actual vs predicted values
+    if selected_features:
+        st.write("**Sample of Actual vs Predicted Values:**")
+        st.write(comparison_df.head())
+
 
 
 
