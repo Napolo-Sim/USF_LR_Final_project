@@ -527,11 +527,11 @@ As a result of these factors, regression models are prone to overfitting. Overfi
 
 For our model, we chose to adjust three of the most common parameters: max depth, min samples split, and min samples leaf. However, there are several more parameters available that we won't be covering in this blog. These hyperparameters help control the complexity of the tree and improve its generalization to new data.
 
-* **max_depth**: This controls how many tiers a tree can have below the initial decision node. In our visualization, this value would be 2. This limit helps prevent the tree from becoming too complex and overfitting the training data.
+* **max_depth**: This controls how many tiers a tree can have below the initial decision node. In our visualization above, this value would be 2. This limit helps prevent the tree from becoming too complex and overfitting the training data.
 * **min_samples_split**: This defines the minimum number of data points needed in a group to allow for further splitting. Once a group reaches this number, it won’t split again, and the model will make a prediction at that leaf. This keeps the model simpler.
 * **min_samples_leaf**: This sets the minimum number of data points required to create a leaf node. By increasing this number, the model becomes more reliable, ensuring that each final group formed by the tree has enough data to provide a good prediction.
 
-You may be wondering, what is the best number to pick for these parameters? You may think that we should test each hyperparameter individually and increment their values and see what is the lowest MSE that we can achieve by changing the hyperparameters on their own and then combine them to make our best model, but let's see what that does.
+You might think it’s best to test each hyperparameter individually, incrementing their values to find the lowest MSE achievable for each. Afterward, you could combine the best values to build the optimal model. However, let’s explore what happens when we take that approach.
 
 Below are plots of each of our hyperparameters and their respective MSE values for each value of the hyperparameter incremented by 1. Based on these visualizations, what do you think are the best numbers to pick for each of the hyperparameters?
 """
@@ -619,7 +619,7 @@ st.markdown(
 You may have thought that by looking at the graphs that the best max_depth value was 3, min_samples_split was 6, and that the best min_sample_leaf value was 4, but this is not always the case. When optimizing decision trees (or any machine learning model) using hyperparameters, it’s common to encounter situations where the best individual hyperparameters do not yield the best overall performance when combined. Some reasons why this can happen include:
 1. **Interaction Effects Between Hyperparameters:** Hyperparameters can interact in complex ways. For example, the optimal value for the max_depth of a tree may depend on the value of min_samples_split. When optimizing them individually, you might miss these interactions that would only become apparent when they are optimized together.
 2. **Overfitting or Underfitting:** The combination of hyperparameters can lead to overfitting or underfitting. One hyperparameter may be optimal for a specific range of values of another hyperparameter. For instance, a deeper tree (max_depth) might perform better with a higher minimum sample split (min_samples_split), but not with a lower one, and vice versa.
-3. **Local Optima:** When tuning hyperparameters individually, you may be stuck in a local optimum. The best setting for one hyperparameter may not align well with the best setting of another. This is especially true in complex models where the performance landscape is not smooth.
+3. **Local Optima:** When tuning hyperparameters individually, you may be stuck in a local optimum-where the setting for one hyperparameter appears optimal but doesn't interact well with others. In complex models, the performance landscape is often irregular, meaning the best value for one parameter may not be the best when combined with others, leading to suboptimal overall performance.
 
 To identify the optimal hyperparameters, we can use grid search—a systematic method for exploring various combinations of hyperparameter values. The goal is to compare all possible combinations to determine the best set (lowest MSE) for the model.
 
