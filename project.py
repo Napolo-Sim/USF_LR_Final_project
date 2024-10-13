@@ -44,10 +44,10 @@ st.set_page_config(page_title="All the Possum-bilities!")
 
 st.markdown(
     """
-    <h1> All the Possum-bilities: The Mystery of Regression Methods! </h1>
+    <h1> All the Possum-bilities: Solving the Mystery of Regression Methods! </h1>
     <div style="display: flex; align-items: center;">
         <div style="flex: 1; text-align: left;">
-            <p>Hello I'm Sherlock Possulmes! Today we're going to be diving into the mystery of regression, and how we can use different types of models to predict information!</p>
+            <p>Hello I'm Sherlock Possulmes. Today we're going to be diving into the mystery of regression, and how we can use different types of models to predict information!</p>
             <p>I'm interested in how I can predict the size of my fellow possums based on their features. Can you help me solve this case?</p>
         </div>
         <div style="flex: 1; text-align: right;">
@@ -66,7 +66,7 @@ As humans, you often use past experiences to make decisions or predictions. Mayb
 
 We can take that same idea and apply it towards predicting the length of a possum. What factors might you consider? Its weight? Its head length? Maybe even the size of its ears? These factors can help us make a more educated guess on the length of our furry friends. However, we can actually do more than an educated guess with the help of data and code.
 
-Similar to humans, computers rely on existing data to make predictions through a process called regression. We'll take a dive into linear regression and look at how we can apply a model to predict the length of a possum. We'll also introduce an alternative regression technique called decision trees to show another way machines can make these predictions.
+Similar to humans, computers rely on existing data to make predictions through a process called regression. We'll take a dive into linear regression and look at how we can apply a model to predict the length of a possum. We'll also introduce an alternative regression technique called decision trees to show another way machines can make predictions.
 
 <h2>What is Regression?</h2>
 
@@ -191,7 +191,7 @@ While SLR's simplicity makes it easy to run and implement, it is limited in how 
 
 <h2>Building Intuition: Picking the Best SLR Model</h2>
 
-To develop your intution on how the SLR model works in practice, we've prepared an interactive graph that plots each independent variable versus the dependent variable (possum total length). As you hover over each of the plots, you will see values for $R^2$ and $MSE$ for each graph, uncover essential clues on which independent variables are the best predictor.
+To develop your intuition on how the SLR model works in practice, we've prepared an interactive graph that plots each independent variable versus the dependent variable (possum total length). As you hover over each of the plots, you will see values for $R^2$ and $MSE$ for each graph, uncover essential clues on which independent variables are the best predictor.
 
 Now that you've learned how the SLR model works and the significance of $R^2$ and $MSE$, let's put your investigative skills to the test. Which independent variable do you believe is the best predictor of possum length? Take a moment to make your analysis, and check under the visualization to see if your detective hunches were correct!
 """, unsafe_allow_html=True)
@@ -328,7 +328,7 @@ MLR allows us to model more complex relationships between dependent and independ
 
 <h3> Building Intuition: Picking the Best MLR Model </h3>
 
-To develop your intution on how the MLR model works in practice, we've prepared another interactive graph. In this graph, you can select which variables you would like to include in your model, and the graph plots the actual values (x) with the predicted values (y) from your chosen model. The $MSE$, $R^2$, and $R^2_{adj}$ are calculated and displayed under the graph, along with a table of some sample values.
+To develop your intuition on how the MLR model works in practice, we've prepared another interactive graph. In this graph, you can select which variables you would like to include in your model, and the graph plots the actual values (x) with the predicted values (y) from your chosen model. The $MSE$, $R^2$, and $R^2_{adj}$ are calculated and displayed under the graph, along with a table of some sample values.
 
 Now that you've learned how the MLR model works and the new tool $R^2_{adj}$, let's put your investigative skills to the test again. What combination of variables increases $R^2$, but decreases $R^2_{adj}$?
 """
@@ -496,13 +496,13 @@ One of the main differences from models, such as linear regression, is that regr
 <h3> Base Model  </h3>
 
 
-A basic regression tree contains decision nodes, branches, and their leafs which contain the prediction or classification results. We can compare these to elements of the 20 questions game:
+A basic regression tree contains decision nodes, branches, and their leaves which contain the prediction or classification results. We can compare these to elements of the 20 questions game:
 
 * <b>Decision node</b>: Decision nodes are where you split the data, based on a specific feature. It asks a yes/no question, and sends the data down the left or right branch according to the answer.
     * Think of this as the question you get asked.
 * <b>Branch</b>: Branches connect a decision node to the next decision node or tree leaf.
     * Based on a yes or no answer, move to another question!
-* <b>Leaf</b>: Leafs are the end points of the tree, containing the different predictions.
+* <b>Leaf</b>: Leaves are the end points of the tree, containing the different predictions.
     * This is the final answer, similar to the guess a 20 questions game gives you at the end!
 
 In the diagram below, we have a short example of a decision tree. If the age is greater than 5 (Yes), then the predicted total length of the possum is 900mm.
@@ -863,7 +863,7 @@ Now that we have many potential models to predict the total length of a possum, 
 
 Using possums as an example, we find that the best model for the current data is the MLR model. To find the best model we can initially look at the $R_{adj}^2$ of all the models. Looking first at the regression tree we find that it is constantly predicting a negative $R_{adj}^2$ value indicating that the model does a poor job in predicting possum length (it does worse than simply predicting the average of all values). While the SLR models best $R^2$ is .48 it still falls short of MLR model which predicts a $R_{adj}^2$ of .78 indicating that it has the "best" predictive power of the three.
 
-Another way to choose the best model is to compare the $MSE$ values of each model. When we compare $MSE$ for the three models, we find that the SLR model performs the worst, while the regression tree has a lower $MSE$ of 727 and $MLR$ has the best $MSE$ of 537. Therefore, the model that we should choose to solve my mystery is the MLR model.
+Another way to choose the best model is to compare the $MSE$ values of each model. When we compare $MSE$ for the three models, we find that the SLR model performs the worst, while the regression tree has a lower $MSE$ of 727 and $MLR$ has the best $MSE$ of 537. Therefore, the model that we should choose to solve the mystery is the MLR model.
 
 Great job, possum pals! I hope you learned a lot today during our investigation into possum body lengths. We found the best model, and can now more accurately predict possum lengths. 
 
