@@ -137,7 +137,7 @@ Where
 * $n$ is the number of observations
 * $p$ is the number of coefficients
 
-The difference between the actual and predicted values of $Y_i$ is squared to keep these all of these values positive, and then summed and divided by $n$ to get MSE. Using MSE, we can figure out how well each individual factor predicts the actual values of our target variable. We want to **minimize MSE** AKA minimize the distance between our predictions and the actual points in order to find our best model.
+The difference between the actual and predicted values of $Y_i$ is squared to keep these all of these values positive, and then summed and divided by $n-p$ to get MSE. Using MSE, we can figure out how well each individual factor predicts the actual values of our target variable. We want to **minimize MSE** AKA minimize the distance between our predictions and the actual points in order to find our best model.
 
 <h4>R-squared (R<sup>2</sup>)</h4> 
 
