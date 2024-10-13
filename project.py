@@ -43,21 +43,20 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 st.set_page_config(page_title="All the Possum-bilities!")
 
 st.markdown(
-"""
-<h1> All the Possum-bilities! </h1>
-Hello I'm Sherlock Possulmes! Today we're going to be diving into the mystery of regression, and how we can use different types of models to predict information! I'm interested in how I can predict the size of my fellow possums based on their features. Can you help me solve this case?
-<p></p>
-<p></p>
-"""
-, unsafe_allow_html=True)
-
-st.markdown(
     """
-    <div style="text-align: center;">
-        <img src="https://cdn.discordapp.com/attachments/1270264700600586271/1294879989719765002/Untitled_design.jpeg?ex=670c9e77&is=670b4cf7&hm=c11dad745e08ba2af6ae9023fafc1194e1de1ebd24dd6e373b4c7241292e0039&" width="300">
+    <h1> All the Possum-bilities! The Mystery of Regression Methods! </h1>
+    <div style="display: flex; align-items: center;">
+        <div style="flex: 1; text-align: left;">
+            <p>Hello I'm Sherlock Possulmes! Today we're going to be diving into the mystery of regression, and how we can use different types of models to predict information!</p>
+            <p>I'm interested in how I can predict the size of my fellow possums based on their features. Can you help me solve this case?</p>
+        </div>
+        <div style="flex: 1; text-align: right;">
+            <img src="https://cdn.discordapp.com/attachments/1270264700600586271/1294879989719765002/Untitled_design.jpeg?ex=670c9e77&is=670b4cf7&hm=c11dad745e08ba2af6ae9023fafc1194e1de1ebd24dd6e373b4c7241292e0039&" width="300">
+        </div>
     </div>
     """, unsafe_allow_html=True
 )
+
 
 st.markdown(
 """
