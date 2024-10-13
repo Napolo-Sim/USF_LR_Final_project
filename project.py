@@ -8,22 +8,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import streamlit as st
 import plotly.express as px
 
-st.set_page_config(page_title="All the Possum-bilities!")
-
-st.markdown(
-"""
-<h1>All the Possum-bilities</h1>
-
-Regression and possums galore!
-
-<h2>Introduction</h2>
-"""
-, unsafe_allow_html=True)
-
-# Load your dataset here
-# Replace the following with your actual dataset loading method
-# Example dataset (replace with actual data)
-
+# Loading our dataset here w/ respective data transformations
 possum_df = pd.read_csv('./Data/possum.csv')
 possum_df = possum_df.drop(columns='site')
 possum_df = possum_df.drop(columns='case')
@@ -54,6 +39,220 @@ X = possum_df_enc.drop('totlngth', axis=1).copy()
 y = possum_df_enc['totlngth']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=40)
+
+st.set_page_config(page_title="All the Possum-bilities!")
+
+st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294825628536930376/Blank_diagram_-_Page_1.jpeg?ex=670c6bd6&is=670b1a56&hm=fe6e20b65bbfd175083143c4cf5a30df52abf215232c81cf026b85d0e1deb715&")
+
+st.markdown(
+"""
+<h1> All the Possum-bilities </h1>
+
+<!-- Hello I'm Sherlock Possulmes! -->
+
+<h2>Introduction</h2>
+
+As humans, we often use past experiences to make decisions or predictions. Maybe you've tried to guess how much a meal will cost based on the appearance of a restaurant, or estimated how tall a kid will grow based on their parent's heights. Whether you realize it or not, you are spotting patterns in past information and using them to make these predictions.
+
+We can take that same idea and apply it towards predicting the length of a possum. What factors might you consider? Its weight? Its head length? Maybe even the size of its ears? These factors can help us make a more educated guess on the length of our furry friends. However, we can actually do more than an educated guess with the help of data and code.
+
+Similar to humans, computers rely on existing data to make predictions through a process called regression. We'll take a dive into linear regression and look at how we can apply a model to predict the length of a possum. We'll also introduce an alternative regression technique called decision trees to show another way machines can make these predictions.
+
+<h2>What is Regression?</h2>
+
+Think of regression like being a detective - but instead of using clues to solve a crime, you're using data to uncover the relationships that help predict a specific outcome or variable. Consider how one thing (like possum length) can be solved by other clues (such as head length). Some clues are key to solving the mystery, while other clues will lead you on a wild goose chase.
+
+In our investigation into possums, we're trying to predict how long a possum is. We have some potential suspects we might consider to solve the mystery, but it's up to us to figure out which ones really matter. Regression helps us narrow down the suspects to the ones that truly matter. We'll look at how strongly factors such as head length and ear conch length (our independent variables/predictors) affect the total length (our dependent variables/prediction).
+
+Maybe we'll discover that all the independent variables demonstrate a strong linear relationship with our dependent variables or only a couple are needed to make the best prediction. Regression analysis lets us explore these complex relationships to discover which factors are pulling their weight, and which aren't. This way, we can make more accurate predictions efficiently, and uncover the mystery of possum lengths.
+
+<h4>Models for Regression Analysis</h4>
+
+We'll look at three common ways to perform a regression analysis:
+* Simple Linear Regression
+* Multiple Linear Regression
+* Classification and Regression Trees (CART)
+
+<h2>Simple Linear Regression</h2>
+
+Let's start with the basics! Simple linear regression (SLR) is a great tool to draw a connection between a piece of evidence with what we are trying to discover, such as the independent variable head length and the dependent variable total length. Imagine you plot the data points on a coordinate grid, with the independent variables on the x-axis and the dependent variables on the y-axis. Your mission is to find the line that is the closest to all the points, or the line of best fit, in order to solve the mystery. 
+
+More formally, the SLR model creates an equation for the line that best “fits” the data using this equation:
+""", unsafe_allow_html=True)
+
+st.latex(r'''
+Y_i = \beta_0+ \beta_1X_i + \epsilon_i
+''')
+
+st.markdown("""
+Where:
+* $Y_i$: the dependent predicted variable (possum length in mm)
+* $\\beta_0$: the first coefficient, aka the intercept
+* $\\beta_1$: the coefficient of the independent variables
+* $X_i$: the independent variables used to predict $Y_i$
+* $\epsilon_i$: captures the random variation in $X_i$ that cannot be explained by $Y_i$
+
+
+When we predict the dependent variable $Y_i$, we never know what the true coefficient $\\beta_1$ is since this value is calculated on the population level. We can only estimate it based on our sample, which gives us $\hat\\beta_1$. With our $\hat\\beta_1$, we can then find $\hat{Y_i}$ using this equation:
+""", unsafe_allow_html=True)
+
+st.latex(r'''
+\hat{Y_i} = \hat{\beta_0} + \hat{\beta_1}X_i
+''')
+
+st.markdown(
+"""
+As a detective, we need to make sure our predictions are as spot on as possible, meaning we want the prediction or "best fit" line to be as close to the population's "best fit" line. To find the most accurate $\hat{Y_i}$ values, we consider criteria such as $R^2$ and $MSE$.
+
+<h3>Measuring the Performance of the SLR Model</h3>
+
+Now that we have a basic understanding of SLR, how do we know if our model or "best fit line" is good? Two key tools can help us measure the effectiveness of our model: $MSE$ and $R^2$.
+
+<h4>Mean-Squared Errors (MSE)</h4>
+
+MSE measures the average squared error that occurs between actual and predicted values of Y. It is the average of the sum of all of the distances between our line (the prediction) and each of the actual data points, squared. The equation for MSE is:
+""", unsafe_allow_html=True)
+
+st.latex(r'''
+MSE = \frac{1}{n} \sum\limits_{i=0}^n (Y_i-\hat{Y_i})^2
+''')
+
+st.markdown(
+"""
+Where
+* $Y_i$ is the actual values of $Y_i$
+* $\hat{Y_i}$ is the predicted values of $Y_i$
+* $n$ is the number of observations
+
+The difference between the actual and predicted values of $Y_i$ is squared to keep these all of these values positive, and then summed and divided by $n$ to get MSE. Using MSE, we can figure out how well each individual factor predicts the actual values of our target variable. We want to **minimize MSE** AKA minimize the distance between our predictions and the actual points in order to find our best model.
+
+<h4>R-squared (R<sup>2</sup>)</h4> 
+
+Our other tool $R^2$ measures the amount of variance in a dependent variable that is explained by one or more of the independent variables. The equation for $R^2$ is:
+""", unsafe_allow_html=True)
+
+st.latex(r'''
+R^2 = 1 - \frac{SSE}{SST}
+''')
+
+st.markdown(
+"""
+Where
+* $SSE$ is the sum of squared errors and has the equation:
+""", unsafe_allow_html=True)
+
+st.latex(r'''
+SSE = \sum\limits_{i=0}^n (Y_i - \hat{Y_i})^2
+''')
+
+st.markdown(
+"""
+* In order words,  all the actual values minus the predicted values squared, summed up.
+
+* $SST$ is the sum of squares total (the measure of the total variability in the dataset), and has the equation:
+""", unsafe_allow_html=True)
+
+st.latex(r'''
+SST = \sum\limits_{i=0}^n (Y_i - \bar{Y_i})^2
+''')
+
+st.markdown(
+"""
+* Or: all the actual values minus the mean Y value squared, summed up.
+
+$R^2$ can range between -1 and 1, but commonly falls between 0 and 1. where 0 indicates that the model does not explain any of the variance in the data, and a 1 indiciates the model explains all of the variance in the data. A negative $R^2$ value indicates that the model performs worse than just having a horizontal line at the mean of the data (our model is doing even worse than predicting the average!). **A higher $R^2$ close to 1 suggest the model is a good fit, while a lower $R^2$ suggests a poor fit.**
+
+<h3>Advantages & Disadvantages of SLR</h3>
+
+<h4>Advantages</h4>
+
+SLR is a basic form of regression analysis and can be powerful for many different tasks. Its advantages include:
+* **Simplicity:** SLR is straightforward to model and interpret, involving just one predictor and one dependent variable.
+* **Clear relationship:** SLR works well for models where there is a clear linear relationship between the dependent and independent variables.
+* **Low Computational Cost:** SLR has a low computational cost compared to many other models due to its simplicity. SLR is quick to implement and can be run quickly on both small and large datasets.
+
+<h4> Disadvantages </h4>
+
+While SLR's simplicity makes it easy to run and implement, it is limited in how well it can capture more complex relationships. Its disadvantages include:
+* **Assumption of linearity:** SLR assumes a linear relationship between the dependent and independent variables. If the data has a nonlinear relationship, SLR will not perform well.
+* **Limited to one predictor:** many factors often contribute to the prediction of a dependent variable. In SLR, we can only consider the relationship between one independent variable and the dependent variable.
+* **Sensitive to outliers:** SLR is highly sensitive to outliers. Outliers can heavily influence the slope of the line and cause the model to inaccurately predict new values.
+
+<h2>Building Intuition: Picking the Best SLR Model</h2>
+
+To develop your intution on how the SLR model works in practice, we've prepared an interactive graph that plots each independent variable versus the dependent variable (possum total length). As you hover over each of the plots, you will see values for $R^2$ and $MSE$ for each graph, uncover essential clues on which independent variables are the best predictor.
+
+Now that you've learned how the SLR model works and the significance of $R^2$ and $MSE$, let's put your investigative skills to the test. Which independent variable do you believe is the best predictor of possum length? Take a moment to make your analysis, and check under the visualization to see if your detective hunches were correct!
+""", unsafe_allow_html=True)
+
+# """"""""""""""""""""""SLR INTERACTIVE GRAPH SECTION""""""""""""""""""""""
+# Filter only numerical predictors
+numerical_predictors = X.select_dtypes(include=['float64', 'int64']).columns.tolist()
+
+# Function to create a hoverable scatter plot with regression line and metrics
+def create_hoverable_plot(df, predictor, response):
+    X = df[[predictor]].values
+    y = df[response].values
+
+    # Fit linear regression
+    model = LinearRegression()
+    model.fit(X, y)
+    y_pred = model.predict(X)
+    
+    # Compute metrics
+    mse = mean_squared_error(y, y_pred)
+    r2 = r2_score(y, y_pred)
+    
+    # Create scatter plot with trendline
+    fig = px.scatter(df, x=predictor, y=response, trendline="ols", title=f'{predictor} vs {response}',
+                     width=250, height=250)  # Adjust the size of the plots (square)
+    
+    fig.data[1].line.color = '#81776d' 
+    fig.data[0].marker.color = '#fbada1'
+    
+    # Update hover template to include MSE and R² values
+    fig.update_traces(
+        hovertemplate=f'MSE: {mse:.2f}<br>R²: {r2:.2f}'
+    )
+    
+    # Center the title and adjust margins
+    fig.update_layout(
+        title={
+            'text': f'{predictor} vs {response}',
+            'y': 0.95,  # Move the title closer to the top
+            'x': 0.6,   # Center the title
+            'xanchor': 'center',
+            'yanchor': 'top',
+            'font': {'size': 12}
+        },
+        xaxis_title={'text': f'{predictor}', 'font': {'size': 10}},  # Adjust x-axis font size here
+        yaxis_title={'text': f'{response}', 'font': {'size': 10}},
+        margin=dict(l=10, r=10, t=30, b=10),  # Reduce left, right, top, bottom margins
+    )
+
+    return fig
+
+# Streamlit app
+# st.title("SLR: Interactive Pairplots with Best Fit Line and Metrics")
+
+# Display the plots in a 5-column layout
+cols = st.columns(3)
+
+# Iterate through the numerical predictors and assign plots to each column
+for idx, predictor in enumerate(numerical_predictors):
+    with cols[idx % 3]:
+        fig = create_hoverable_plot(possum_df_enc, predictor, 'totlngth')
+        st.plotly_chart(fig)
+
+st.markdown(
+"""
+If you chose **hdlength (head length)** as the best predictor of possum length, you're spot on! Head length had the lowest $MSE$ value and highest $R^2$ value, making head length the best variable to predict total possum length. Therefore, it will be the "best" model for this SLR case. 
+
+However, keep in mind that the values of $MSE$ for this model were approximately 961, with an average $R^2$ value of 0.48. Could we lower $MSE$ or raise the $R^2$ value? To dive deeper into this mystery, lets turn to Multiple Linear Regression to see how we can refine our guesses.
+"""
+, unsafe_allow_html=True)
+
+
 
 
 """DECISION TREE INTERACTIVE GRAPH SECTION - START"""
@@ -319,61 +518,41 @@ with right_col:
 
 
 
-"""SLR INTERACTIVE GRAPH SECTION"""
-# Filter only numerical predictors
-numerical_predictors = X.select_dtypes(include=['float64', 'int64']).columns.tolist()
 
-# Function to create a hoverable scatter plot with regression line and metrics
-def create_hoverable_plot(df, predictor, response):
-    X = df[[predictor]].values
-    y = df[response].values
 
-    # Fit linear regression
-    model = LinearRegression()
-    model.fit(X, y)
-    y_pred = model.predict(X)
-    
-    # Compute metrics
-    mse = mean_squared_error(y, y_pred)
-    r2 = r2_score(y, y_pred)
-    
-    # Create scatter plot with trendline
-    fig = px.scatter(df, x=predictor, y=response, trendline="ols", title=f'{predictor} vs {response}',
-                     width=250, height=250)  # Adjust the size of the plots (square)
-    
-    fig.data[1].line.color = '#81776d' 
-    fig.data[0].marker.color = '#fbada1'
-    
-    # Update hover template to include MSE and R² values
-    fig.update_traces(
-        hovertemplate=f'MSE: {mse:.2f}<br>R²: {r2:.2f}'
-    )
-    
-    # Center the title and adjust margins
-    fig.update_layout(
-        title={
-            'text': f'{predictor} vs {response}',
-            'y': 0.95,  # Move the title closer to the top
-            'x': 0.6,   # Center the title
-            'xanchor': 'center',
-            'yanchor': 'top',
-            'font': {'size': 12}
-        },
-        xaxis_title={'text': f'{predictor}', 'font': {'size': 10}},  # Adjust x-axis font size here
-        yaxis_title={'text': f'{response}', 'font': {'size': 10}},
-        margin=dict(l=10, r=10, t=30, b=10),  # Reduce left, right, top, bottom margins
-    )
 
-    return fig
+"""DECISION TREE - HOW IT WORKS VISUAL DEMO"""
+def possum_decision_tree():
+    st.title("Possum Classification Decision Tree")
 
-# Streamlit app
-st.title("SLR: Interactive Pairplots with Best Fit Line and Metrics")
+    st.write("Answer the following questions to classify if the animal is a possum:")
 
-# Display the plots in a 5-column layout
-cols = st.columns(3)
+    # Question 1
+    question1 = st.radio("Does the animal have a pointed snout?", ("Yes", "No"))
 
-# Iterate through the numerical predictors and assign plots to each column
-for idx, predictor in enumerate(numerical_predictors):
-    with cols[idx % 3]:
-        fig = create_hoverable_plot(possum_df_enc, predictor, 'totlngth')
-        st.plotly_chart(fig)
+    if question1 == "Yes":
+        # Question 2
+        question2 = st.radio("Does it have a hairless tail?", ("Yes", "No"))
+
+        if question2 == "Yes":
+            st.write("**Classification: It is a Possum!**")
+        else:
+            st.write("**Classification: It is NOT a Possum!**")
+    else:
+        # Question 3
+        question3 = st.radio("Is it nocturnal?", ("Yes", "No"))
+
+        if question3 == "Yes":
+            # Question 4
+            question4 = st.radio("Does it have fur that can be gray, brown, or black?", ("Yes", "No"))
+
+            if question4 == "Yes":
+                st.write("**Classification: It is NOT a Possum!**")
+            else:
+                st.write("**Classification: It is NOT a Possum!**")
+        else:
+            st.write("**Classification: It is NOT a Possum!**")
+
+# Run the app
+if __name__ == "__main__":
+    possum_decision_tree()
