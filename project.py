@@ -42,14 +42,25 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 st.set_page_config(page_title="All the Possum-bilities!")
 
-st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294825628536930376/Blank_diagram_-_Page_1.jpeg?ex=670c6bd6&is=670b1a56&hm=fe6e20b65bbfd175083143c4cf5a30df52abf215232c81cf026b85d0e1deb715&")
+st.markdown(
+"""
+<h1> All the Possum-bilities! </h1>
+Hello I'm Sherlock Possulmes! Today we're going to be diving into the mystery of regression, and how we can use different types of models to predict information! I'm interested in how I can predict the size of my fellow possums based on their features. Can you help me solve this case?
+<p></p>
+<p></p>
+"""
+, unsafe_allow_html=True)
+
+st.markdown(
+    """
+    <div style="text-align: center;">
+        <img src="https://cdn.discordapp.com/attachments/1270264700600586271/1294879989719765002/Untitled_design.jpeg?ex=670c9e77&is=670b4cf7&hm=c11dad745e08ba2af6ae9023fafc1194e1de1ebd24dd6e373b4c7241292e0039&" width="300">
+    </div>
+    """, unsafe_allow_html=True
+)
 
 st.markdown(
 """
-<h1> All the Possum-bilities </h1>
-
-<!-- Hello I'm Sherlock Possulmes! -->
-
 <h2>Introduction</h2>
 
 As humans, we often use past experiences to make decisions or predictions. Maybe you've tried to guess how much a meal will cost based on the appearance of a restaurant, or estimated how tall a kid will grow based on their parent's heights. Whether you realize it or not, you are spotting patterns in past information and using them to make these predictions.
@@ -695,7 +706,7 @@ train_and_display_decision_tree(max_depth, min_samples_split, min_samples_leaf)
 
 st.markdown(
 """
-Based on your testing, were you able to find the best hyperparameters for the model? You may have found that the best values individually did happen to lead to the lowest MSE value, but you may have also found that any min_sample_split value also led to this minimized MSE value. This is to show that it is important to optimize using a combination of these three hyperparameters rather than trying to optimize each since you may find that certain combinations of hyperparamters lead to better performace than the values you tested for in the hyperparameters individually.
+Based on your testing, were you able to find the best hyperparameters for the model? You may have found that the best values individually did happen to lead to the lowest MSE value, but you may have also found that any min_sample_split value also led to this minimized MSE value. This is to show that it is important to optimize using a combination of these three hyperparameters rather than trying to optimize each since you may find that certain combinations of hyperparamters lead to better performance than the values you tested for in the hyperparameters individually.
 
 Selecting the appropriate hyperparameters for our model is important, but it is also vital to understand how the decision tree determines where to split the data points. For this, regression trees use MSE, the same metric we discussed in the linear regression section, to guide their decisions on features and values to split.
 
