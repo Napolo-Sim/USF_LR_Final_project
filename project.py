@@ -44,7 +44,7 @@ st.set_page_config(page_title="All the Possum-bilities!")
 
 st.markdown(
     """
-    <h1> All the Possum-bilities! The Mystery of Regression Methods! </h1>
+    <h1> All the Possum-bilities: The Mystery of Regression Methods! </h1>
     <div style="display: flex; align-items: center;">
         <div style="flex: 1; text-align: left;">
             <p>Hello I'm Sherlock Possulmes! Today we're going to be diving into the mystery of regression, and how we can use different types of models to predict information!</p>
