@@ -118,8 +118,6 @@ As a detective, we need to make sure our predictions are as spot on as possible,
 
 <h3>Measuring the Performance of the SLR Model</h3>
 
-Now that we have a basic understanding of SLR, how do we know if our model or "best fit line" is good? Two key tools can help us measure the effectiveness of our model: $MSE$ and $R^2$.
-
 <h4>Mean-Squared Errors (MSE)</h4>
 
 MSE measures the average squared error that occurs between actual and predicted values of Y. It is the average of the sum of all of the distances between our line (the prediction) and each of the actual data points, squared. The equation for MSE is:
@@ -135,7 +133,7 @@ Where
 * $Y_i$ is the actual values of $Y_i$
 * $\hat{Y_i}$ is the predicted values of $Y_i$
 * $n$ is the number of observations
-* $p$ is the number of coefficients
+* $p$ is the number of $\\beta_j$'s (in SLR this value is 2)
 
 The difference between the actual and predicted values of $Y_i$ is squared to keep these all of these values positive, and then summed and divided by $n-p$ to get MSE. Using MSE, we can figure out how well each individual factor predicts the actual values of our target variable. We want to **minimize MSE** AKA minimize the distance between our predictions and the actual points in order to find our best model.
 
@@ -160,7 +158,7 @@ SSE = \sum\limits_{i=0}^n (Y_i - \hat{Y_i})^2
 
 st.markdown(
 """
-* In order words,  all the actual values minus the predicted values squared, summed up.
+In order words,  all the actual values minus the predicted values squared, summed up.
 
 * $SST$ is the sum of squares total (the measure of the total variability in the dataset), and has the equation:
 """, unsafe_allow_html=True)
@@ -171,9 +169,9 @@ SST = \sum\limits_{i=0}^n (Y_i - \bar{Y_i})^2
 
 st.markdown(
 """
-* Or: all the actual values minus the mean Y value squared, summed up.
+In other words, all the actual values minus the mean Y value squared, summed up.
 
-$R^2$ can range between -1 and 1, but commonly falls between 0 and 1. where 0 indicates that the model does not explain any of the variance in the data, and a 1 indiciates the model explains all of the variance in the data. A negative $R^2$ value indicates that the model performs worse than just having a horizontal line at the mean of the data (our model is doing even worse than predicting the average!). **A higher $R^2$ close to 1 suggest the model is a good fit, while a lower $R^2$ suggests a poor fit.**
+$R^2$ can range between -1 and 1, but commonly falls between 0 and 1, where 0 indicates that the model does not explain any of the variance in the data, and a 1 indiciates the model explains all of the variance in the data. A negative $R^2$ value indicates that the model performs worse than just having a horizontal line at the mean of the data (our model is doing even worse than predicting the average!). **A higher $R^2$ close to 1 suggest the model is a good fit, while a lower $R^2$ suggests a poor fit.**
 
 <h3>Advantages & Disadvantages of SLR</h3>
 
@@ -318,7 +316,7 @@ By using the alternative $R^2_{adj}$, we can better assess whether our new clues
 <h4>Advantages</h4>
 
 MLR allows us to model more complex relationships between dependent and independent variables.
-* MLR **accounts for more factors** that might usually influence the the dependent variable.
+* MLR **accounts for more factors** that might usually influence the dependent variable.
 * MLR **often gives more accurate and reliable predictions** since there are more factors to contribute to the prediction.
 * MLR **can also model the relationship between two predictors (called an interaction)**, and how their presence together have an additional effect on the prediction.
 
@@ -330,16 +328,14 @@ MLR allows us to model more complex relationships between dependent and independ
 
 <h3> Building Intuition: Picking the Best MLR Model </h3>
 
-To develop your intution on how the MLR model works in practice, we've prepared another interactive graph. In this graph, you can select which variables you would like to include in your model, and the graph plots the actual values (x) with the predicted values (y) from your chosen model. The $MSE$, $R^2$, and $R^2_{adj}$ are calculated and displayed under the graph, along as a table of some sample values.
+To develop your intution on how the MLR model works in practice, we've prepared another interactive graph. In this graph, you can select which variables you would like to include in your model, and the graph plots the actual values (x) with the predicted values (y) from your chosen model. The $MSE$, $R^2$, and $R^2_{adj}$ are calculated and displayed under the graph, along with a table of some sample values.
 
 Now that you've learned how the MLR model works and the new tool $R^2_{adj}$, let's put your investigative skills to the test again. What combination of variables increases $R^2$, but decreases $R^2_{adj}$?
 """
 , unsafe_allow_html=True)
 
-########################### """MULTIPLE LINEAR REGRESSION SECTION!!!""" ###########################
 # Streamlit app
 st.header("MLR: Find Features that Increase R Squared but Reduce R Squared Adjusted")
-# st.write("Select features to include in the model:")
 
 # Function to calculate adjusted R-squared
 def adjusted_r2(r2, n, p):
@@ -349,61 +345,66 @@ def adjusted_r2(r2, n, p):
 @st.cache_data
 def train_and_display_linear_regression(selected_features):
     if not selected_features:
-        return None, None, None, None, None, None, None
+        return None, None, None, None, None, None
 
-    # Use training data for selected features
     X_train_selected = X_train[selected_features]
-    
-    # Train the model on the training data
+    X_test_selected = X_test[selected_features]
+
     model = LinearRegression()
     model.fit(X_train_selected, y_train)
 
-    # Predict on the training data
     y_pred_train = model.predict(X_train_selected)
 
-    # Calculate metrics based on the training data
     mse = mean_squared_error(y_train, y_pred_train)
+    #rmse = np.sqrt(mse)
     r2 = r2_score(y_train, y_pred_train)
 
-    n = len(y_train)  # Number of observations in the training set
-    p = len(selected_features)  # Number of features
+    n = len(y_train)
+    p = len(selected_features)
     adj_r2 = adjusted_r2(r2, n, p)
 
     coef_df = pd.DataFrame({'Feature': selected_features, 'Coefficient': model.coef_})
 
+    model = LinearRegression()
+    model.fit(y_train.values.reshape(-1, 1), y_pred_train)  # Reshape for sklearn
+
+    # Create a range of values for y_test for the regression line
+    y_test_range = np.linspace(y_train.min(), y_train.max(), 100).reshape(-1, 1)
+    y_pred_line = model.predict(y_test_range)
+
     # Create the scatter plot
-    fig, ax = plt.subplots(figsize=(10, 8))
-    ax.scatter(y_train, y_pred_train, color='#fbada1')
+    fig, ax = plt.subplots(figsize = (10, 8))
+    ax.scatter(y_train, y_pred_train, color = '#fbada1')  # Adding some transparency for better visibility
 
     # Add a reference line (y = x)
-    ax.plot(y_train, y_train, color='#81776d', linestyle='-', lw=2, label='Regression Line')
+    ax.plot(y_test_range, y_pred_line, color='#81776d', linestyle='-', lw=2, label='Regression Line')
 
     # Set labels and title
-    ax.set_xlabel('Actual (Training)', fontsize=12, color='#81776d', weight='bold')
-    ax.set_ylabel('Predicted (Training)', fontsize=12, color='#81776d', weight='bold')
-    ax.set_title('Actual vs Predicted Values (Training Data)', fontsize=18, weight='bold', color='#81776d')
+    ax.set_xlabel('Actual', fontsize=12, color='#81776d', weight='bold')
+    ax.set_ylabel('Predicted', fontsize=12, color='#81776d', weight='bold')
+    ax.set_title('Actual vs Predicted Values', fontsize=18, weight='bold', color='#81776d')
 
-    # Customize spines and ticks
+    # Hide the top and right spines and set spine colors and widths
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
     ax.spines['left'].set_color('#81776d')
     ax.spines['bottom'].set_color('#81776d')
     ax.spines['left'].set_linewidth(1)
     ax.spines['bottom'].set_linewidth(1)
+
+    # Change tick label colors
     ax.tick_params(axis='both', colors='#81776d')
 
     # Adjust label positions
-    ax.xaxis.set_label_coords(0.85, -0.1)
-    ax.yaxis.set_label_coords(-0.1, 0.85)
+    ax.xaxis.set_label_coords(0.85, -0.1)  # Adjust x label position
+    ax.yaxis.set_label_coords(-0.1, 0.85)  # Adjust y label position
 
     # Show the plot
-    plt.tight_layout()
+    plt.show()
 
-    # Prepare comparison DataFrame for actual vs predicted values
     comparison_df = pd.DataFrame({'Actual': y_train, 'Predicted': y_pred_train})
 
     return mse, r2, adj_r2, coef_df, fig, comparison_df
-
 
 # Create columns for dropdown and visualization
 left_col, right_col = st.columns([1, 2])  # 1 part for dropdown and metrics, 2 parts for visualization
@@ -495,7 +496,7 @@ One of the main differences from models, such as linear regression, is that regr
 <h3> Base Model  </h3>
 
 
-A basic classification tree contains decision nodes, branches, and their leafs which contain the prediction or classification results. We can compare these to elements of the 20 questions game:
+A basic regression tree contains decision nodes, branches, and their leafs which contain the prediction or classification results. We can compare these to elements of the 20 questions game:
 
 * <b>Decision node</b>: Decision nodes are where you split the data, based on a specific feature. It asks a yes/no question, and sends the data down the left or right branch according to the answer.
     * Think of this as the question you get asked.
@@ -616,11 +617,11 @@ st.markdown(
 -->
 
 You may have thought that by looking at the graphs that the best max_depth value was 3, min_samples_split was 6, and that the best min_sample_leaf value was 4, but this is not always the case. When optimizing decision trees (or any machine learning model) using hyperparameters, it’s common to encounter situations where the best individual hyperparameters do not yield the best overall performance when combined. Some reasons why this can happen include:
-* **Interaction Effects Between Hyperparameters:** Hyperparameters can interact in complex ways. For example, the optimal value for the max_depth of a tree may depend on the value of min_samples_split. When optimizing them individually, you might miss these interactions that would only become apparent when they are optimized together.
+1. **Interaction Effects Between Hyperparameters:** Hyperparameters can interact in complex ways. For example, the optimal value for the max_depth of a tree may depend on the value of min_samples_split. When optimizing them individually, you might miss these interactions that would only become apparent when they are optimized together.
 2. **Overfitting or Underfitting:** The combination of hyperparameters can lead to overfitting or underfitting. One hyperparameter may be optimal for a specific range of values of another hyperparameter. For instance, a deeper tree (max_depth) might perform better with a higher minimum sample split (min_samples_split), but not with a lower one, and vice versa.
 3. **Local Optima:** When tuning hyperparameters individually, you may be stuck in a local optimum. The best setting for one hyperparameter may not align well with the best setting of another. This is especially true in complex models where the performance landscape is not smooth.
 
-To determine the optimal set of hyperparameters, we can employ a grid search, which is a systematic approach to explore a range of hyperparameter values. In other words, since we want to find the best set of hyperparameters, we want to compare every set against each other. Think about each square in the grid being a combo of hyperparameters.
+To identify the optimal hyperparameters, we can use grid search—a systematic method for exploring various combinations of hyperparameter values. The goal is to compare all possible combinations to determine the best set (lowest MSE) for the model.
 
 For our model, we tested the maximum depth of the tree with values ranging from 2 to 10, the minimum sample split from 2 to 10, and the minimum samples per leaf from 1 to 5. We  iterated through every combination of these hyperparameters, evaluating which combination produces the best regression tree based on the mean squared error (MSE).
 
@@ -706,7 +707,7 @@ train_and_display_decision_tree(max_depth, min_samples_split, min_samples_leaf)
 
 st.markdown(
 """
-Based on your testing, were you able to find the best hyperparameters for the model? You may have found that the best values individually did happen to lead to the lowest MSE value, but you may have also found that any min_sample_split value also led to this minimized MSE value. This is to show that it is important to optimize using a combination of these three hyperparameters rather than trying to optimize each since you may find that certain combinations of hyperparamters lead to better performance than the values you tested for in the hyperparameters individually.
+Based on your testing, were you able to identify the best hyperparameters for the model? You may have noticed that some individual hyperparameter values led to the lowest MSE, but also found that multiple min_samples_split values achieved the same result. This highlights the importance of optimizing hyperparameters as a combination rather than individually, as certain combinations can yield better performance than focusing on each hyperparameter in isolation.
 
 Selecting the appropriate hyperparameters for our model is important, but it is also vital to understand how the decision tree determines where to split the data points. For this, regression trees use MSE, the same metric we discussed in the linear regression section, to guide their decisions on features and values to split.
 
@@ -743,16 +744,16 @@ Each potential split is evaluated to find the one with the lowest impurity score
 
 <h2> Classification Trees </h2>
 
-Decision trees can also be used for classification problems. Classification means that you are predicting the class that something belongs to rather than an outcome value. It functions in a similar way as regression trees except the way it splits points is based on impurity functions. The common impurity functions are Gini Index or Entropy and Information Gain.
+Similar to regression trees, classification trees can be used to make predictions by asking questions in order to make a good guess. 
+The main difference between regression and classification is that regression is trying to predict a continuous value whereas classification is 
+trying to predict some type of category. Let's solidify your understanding with an intuition example.
 """, unsafe_allow_html=True)
-
-st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294825902542422016/Blank_diagram_-_Page_1_1.jpeg?ex=670c6c17&is=670b1a97&hm=17dfd75772f78f0975170ac8744c9ce794991b84d2f6a4c8479c9b11fa0a715f&")
 
 st.markdown(
 """
 <h2>Building Intuition: How Do Classifiers Work?</h2>    
 
-To give a better understanding of what classifiers are and how they work, we start with a simple game of "Is it a possum or not?"
+Let's start with a simple game of "Is it a possum or not?"
 
 Given an animal, how could you guess if that given animal was a possum or not through some basic questions? Answer the questions below and see what the output is. 
 """
@@ -784,7 +785,7 @@ def possum_decision_tree():
             question4 = st.radio("Does it have fur that can be gray, brown, or black?", ("Yes", "No"))
 
             if question4 == "Yes":
-                st.write("**Classification: It is NOT a Possum!**")
+                st.write("**Classification: It is a Possum!**")
             else:
                 st.write("**Classification: It is NOT a Possum!**")
         else:
@@ -794,9 +795,11 @@ def possum_decision_tree():
 if __name__ == "__main__":
     possum_decision_tree()
 
+st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294825902542422016/Blank_diagram_-_Page_1_1.jpeg?ex=670c6c17&is=670b1a97&hm=17dfd75772f78f0975170ac8744c9ce794991b84d2f6a4c8479c9b11fa0a715f&")
+
 st.markdown(
 """
-With this example, we can start getting the basic understandings of how classification trees work and begin to understand the difference between regression where we predict numbers and classification, where we are now predicting a class.
+With this example, we can start getting the basic understandings of how classification trees work and begin to understand the difference between this method and regression. It functions in a similar way as regression trees except the way it splits points is based on impurity functions. The common impurity functions are Gini Index or Entropy and Information Gain.
 <h3> New Impurity Functions </h3>
 
 <h4> Gini Index/Impurity </h4>
@@ -837,7 +840,7 @@ With p<sub>i</sub> is the proportion of instances belonging to class i and subse
 
 <h4> Information Gain </h4>
 
-After calculating entropy, we can use this in conjunction with information gain. Information Gain builds on to entropy by measuring how much entropy is reduced after a dataset is split. Think of it as asking, "How much clearer did things get after making this split?" A higher Information Gain means the split did a good job of organizing the data, creating child nodes that are more focused, with most items belonging to the same class. The goal is to make each split result in groups that are more uniform than before, helping the model make better predictions. Essentially, Information Gain tracks how much variability decreases with each split, similarly to MSE for regression.
+After calculating entropy, we can use this in conjunction with information gain. Information gain builds on to entropy by measuring how much entropy is reduced after a dataset is split. Think of it as asking, "How much clearer did things get after making this split?" A higher information gain means the split did a good job of organizing the data, creating child nodes that are more focused, with most items belonging to the same class. The goal is to make each split result in groups that are more uniform than before, helping the model make better predictions. Essentially, information gain tracks how much variability decreases with each split, similarly to MSE for regression.
 """
 , unsafe_allow_html=True)
 
