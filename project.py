@@ -252,6 +252,199 @@ However, keep in mind that the values of $MSE$ for this model were approximately
 """
 , unsafe_allow_html=True)
 
+st.markdown(
+"""
+<h2>Multiple Linear Regression (MLR)</h2>
+
+Multiple linear regression (MLR) further enhances our investigation into the mystery of possum length. Instead of just one clue now (one independent variable/predictor), we have multiple clues (two or more independent variables/predictors) to find the answer. The core of MLR still functions similarly to SLR, except our equation now needs to account for some more variables:
+"""
+, unsafe_allow_html=True)
+
+st.latex(r'''Y_i = \beta_0+ \beta_1X_1 + \beta_2X_2+ ... + \beta_pX_{p-1} + \epsilon_i''')
+
+st.markdown(
+"""
+We now have $X_1$ through $X_{p-1}$ where $p$ is the number of coefficients $\\beta$ we have in the model. These new predictors don't have to be uniform; we can combine categorical variables (which require preprocessing through dummy encoding, not covered here) with integer/float variables, enabling us to explore the relationships within the data more deeply!
+
+<h3> Changes Compared to SLR </h3>
+
+<h4> Multicollinearity and Variance Inflation Factors </h4>
+
+While multiple predictors give us many more clues to work with, it also brings some new challenges to our investigation. One of the most signifcant challenges is multicollinearity, which can occur when two or more independent variables are highly correlated with each other. In other words, one variable explains the same effects as another variable, muddling the actual relationship between these variables and the dependent variable. High multicollinearity can affect our interpretation of the model and decrease the accuracy of our predictions.
+
+To address multicollinearity in MLR, we can look at Variance Inflation Factors (VIF). VIF is a valuable tool that tells us whether an independent variable is correlated with another variable in the model.
+
+Here's how we can interpret the values from VIF:
+* **VIF between 1 and 4: low multicollinearity (preferred!)**
+* **VIF between 4 and 10: moderate multicollinearity**
+* **VIF above 10: high multicollinearity (needs to be addressed!)**
+
+Calculating the VIF among the various independent variables helps us reduce multicollinearity by eliminating features with high VIF values, allowing us to draw more accurate conclusions from our data!
+
+<h4> Adjusted R-squared </h4>
+
+Another challenge is introduced with multiple predictor variables: as more independent variables are added to a model, $R^2$ will always increase even when the independent variables are not useful - or worse, are detrimental - to predicting the dependent variable. To solve this problem, we use adjusted $R^2$ ($R_{adj}^2$) MLR.
+
+$R_{adj}^2$ is similar to $R^2$ in that we are still measuring how well our model predicts the dependent variable, but also takes into account the effect that adding more predictors into the model has. An additional penalty is added for adding more variables to the model. The formula for adjusted $R^2$ is:
+"""
+, unsafe_allow_html=True)
+
+st.latex(r'''R^2_{adj} = 1 - \frac{MSE}{MST} = 1 - \frac{SSE/(n-p)}{SST/(n-1)}''')
+
+st.markdown(
+"""
+Where
+* $SSE$ is the sum of squared errors 
+* $SST$ is the sum of squared total
+(refer to equations above)
+* $n$ is the total number of observations
+* $p$ is the number of parameters ($\\beta_j$'s)
+
+By using the alternative $R^2_{adj}$, we can better assess whether our new clues are genuinely improving our guess, or cluttering it with unnecessary complexity.
+
+<h4>Advantages</h4>
+
+MLR allows us to model more complex relationships between dependent and independent variables.
+* MLR **accounts for more factors** that might usually influence the the dependent variable.
+* MLR **often gives more accurate and reliable predictions** since there are more factors to contribute to the prediction.
+* MLR **can also model the relationship between two predictors (called an interaction)**, and how their presence together have an additional effect on the prediction.
+
+<h4>Disadvantages</h4>
+
+* Since MLR includes more factors, the model can become **harder to interpret**. It can be difficult to determine which factors have a small/large impact on the model.
+* MLR is **more prone to overfitting** since we are considering more factors. There is a greater chance we are modelling the noise in the data as well.
+* **Multicollinearity** is possible in MLR since we have more than 1 predictor, which can affect our interpretation of the model.
+
+<h3> Building Intuition: Picking the Best MLR Model </h3>
+
+To develop your intution on how the MLR model works in practice, we've prepared another interactive graph. In this graph, you can select which variables you would like to include in your model, and the graph plots the actual values (x) with the predicted values (y) from your chosen model. The $MSE$, $R^2$, and $R^2_{adj}$ are calculated and displayed under the graph, along as a table of some sample values.
+
+Now that you've learned how the MLR model works and the new tool $R^2_{adj}$, let's put your investigative skills to the test again. What combination of variables increases $R^2$, but decreases $R^2_{adj}$?
+
+<!-- TODO -->
+MLR GRAPH - Allows users to pick the variable they want to be included in the model and we show the result with MSE and $R_{adj}^2$.
+"""
+, unsafe_allow_html=True)
+
+########################### """MULTIPLE LINEAR REGRESSION SECTION!!!""" ###########################
+# Streamlit app
+st.header("Multiple Linear Regression")
+st.write("Select features to include in the model:")
+
+# Function to calculate adjusted R-squared
+def adjusted_r2(r2, n, p):
+    return 1 - (1 - r2) * (n - 1) / (n - p - 1)
+
+# Function to train and display linear regression results
+@st.cache_data
+def train_and_display_linear_regression(selected_features):
+    if not selected_features:
+        return None, None, None, None, None, None, None
+
+    # Use training data for selected features
+    X_train_selected = X_train[selected_features]
+    
+    # Train the model on the training data
+    model = LinearRegression()
+    model.fit(X_train_selected, y_train)
+
+    # Predict on the training data
+    y_pred_train = model.predict(X_train_selected)
+
+    # Calculate metrics based on the training data
+    mse = mean_squared_error(y_train, y_pred_train)
+    r2 = r2_score(y_train, y_pred_train)
+
+    n = len(y_train)  # Number of observations in the training set
+    p = len(selected_features)  # Number of features
+    adj_r2 = adjusted_r2(r2, n, p)
+
+    coef_df = pd.DataFrame({'Feature': selected_features, 'Coefficient': model.coef_})
+
+    # Create the scatter plot
+    fig, ax = plt.subplots(figsize=(10, 8))
+    ax.scatter(y_train, y_pred_train, color='#fbada1')
+
+    # Add a reference line (y = x)
+    ax.plot(y_train, y_train, color='#81776d', linestyle='-', lw=2, label='Regression Line')
+
+    # Set labels and title
+    ax.set_xlabel('Actual (Training)', fontsize=12, color='#81776d', weight='bold')
+    ax.set_ylabel('Predicted (Training)', fontsize=12, color='#81776d', weight='bold')
+    ax.set_title('Actual vs Predicted Values (Training Data)', fontsize=18, weight='bold', color='#81776d')
+
+    # Customize spines and ticks
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines['left'].set_color('#81776d')
+    ax.spines['bottom'].set_color('#81776d')
+    ax.spines['left'].set_linewidth(1)
+    ax.spines['bottom'].set_linewidth(1)
+    ax.tick_params(axis='both', colors='#81776d')
+
+    # Adjust label positions
+    ax.xaxis.set_label_coords(0.85, -0.1)
+    ax.yaxis.set_label_coords(-0.1, 0.85)
+
+    # Show the plot
+    plt.tight_layout()
+
+    # Prepare comparison DataFrame for actual vs predicted values
+    comparison_df = pd.DataFrame({'Actual': y_train, 'Predicted': y_pred_train})
+
+    return mse, r2, adj_r2, coef_df, fig, comparison_df
+
+
+# Create columns for dropdown and visualization
+left_col, right_col = st.columns([1, 2])  # 1 part for dropdown and metrics, 2 parts for visualization
+
+# Create dropdown in the left column
+with left_col:
+    feature_cols = X.columns.tolist()  # Get the feature columns
+    selected_features = st.multiselect(
+        "Choose features for regression:",
+        options=feature_cols,
+        default=[]  # Start with no features selected
+    )
+
+    # Initialize empty plot variable
+    fig = None
+
+    if selected_features:
+        # Call the function to get MSE, R², etc. and plot
+        mse, r2, adj_r2, coef_df, fig, comparison_df = train_and_display_linear_regression(selected_features)
+
+        # Display the model coefficients
+        st.write("**Model Coefficients:**")
+        st.write(coef_df)
+
+# Display visualization in the right column
+with right_col:
+    if fig is not None:
+        st.pyplot(fig)
+
+        # Display the metrics below the visualization
+        if mse is not None:
+            st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
+            st.write(f"**R-squared (R²):** {r2:.4f}")
+            st.write(f"**Adjusted R-squared:** {adj_r2:.4f}")
+
+        # Display the sample of actual vs predicted values
+        st.write("**Sample of Actual vs Predicted Values:**")
+        st.write(comparison_df.head())
+    else:
+        if not selected_features:
+            st.write("Please select at least one feature to see the results.")
+
+
+st.markdown(
+"""
+There are many right answers for this question! One answer is a MLR model using the predictors hdlngth and age. The $R^2$ is 0.4948 and the $R^2_{adj}$ is 0.4885 for a model with only hdlngth. After adding the predictor age, our $R^2$ becomes 0.4959 (+0.0011) and the $R^2_{adj}$ becomes 0.4833 (-0.0052). If we were only looking at $R^2$, we might conclude that the second model is better, but looking at $R^2_{adj}$, we can conclude that the model with only hdlngth is better. $R^2_{adj}$ is essential in determining whether we are adding useful complexity or not.
+
+Imagine you're looking at a more complex case, where the relationship between your clues and possum length isn't as straightforward. We can take a look at Classification and Regression Trees (CART) to uncover the patterns in our data.
+"""
+, unsafe_allow_html=True)
+
 
 
 
@@ -403,122 +596,6 @@ with cols[2]:
     fig_min_samples_leaf.update_traces(line=dict(color='#ffcdc4'))  
     fig_min_samples_leaf.update_traces(mode='lines+markers', line=dict(color='#fbada1'))  
     st.plotly_chart(fig_min_samples_leaf)
-
-
-"""MULTIPLE LINEAR REGRESSION SECTION!!!"""
-# Streamlit app
-st.header("Multiple Linear Regression")
-st.write("Select features to include in the model:")
-
-# Function to calculate adjusted R-squared
-def adjusted_r2(r2, n, p):
-    return 1 - (1 - r2) * (n - 1) / (n - p - 1)
-
-# Function to train and display linear regression results
-@st.cache_data
-def train_and_display_linear_regression(selected_features):
-    if not selected_features:
-        return None, None, None, None, None, None, None
-
-    # Use training data for selected features
-    X_train_selected = X_train[selected_features]
-    
-    # Train the model on the training data
-    model = LinearRegression()
-    model.fit(X_train_selected, y_train)
-
-    # Predict on the training data
-    y_pred_train = model.predict(X_train_selected)
-
-    # Calculate metrics based on the training data
-    mse = mean_squared_error(y_train, y_pred_train)
-    r2 = r2_score(y_train, y_pred_train)
-
-    n = len(y_train)  # Number of observations in the training set
-    p = len(selected_features)  # Number of features
-    adj_r2 = adjusted_r2(r2, n, p)
-
-    coef_df = pd.DataFrame({'Feature': selected_features, 'Coefficient': model.coef_})
-
-    # Create the scatter plot
-    fig, ax = plt.subplots(figsize=(10, 8))
-    ax.scatter(y_train, y_pred_train, color='#fbada1')
-
-    # Add a reference line (y = x)
-    ax.plot(y_train, y_train, color='#81776d', linestyle='-', lw=2, label='Regression Line')
-
-    # Set labels and title
-    ax.set_xlabel('Actual (Training)', fontsize=12, color='#81776d', weight='bold')
-    ax.set_ylabel('Predicted (Training)', fontsize=12, color='#81776d', weight='bold')
-    ax.set_title('Actual vs Predicted Values (Training Data)', fontsize=18, weight='bold', color='#81776d')
-
-    # Customize spines and ticks
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    ax.spines['left'].set_color('#81776d')
-    ax.spines['bottom'].set_color('#81776d')
-    ax.spines['left'].set_linewidth(1)
-    ax.spines['bottom'].set_linewidth(1)
-    ax.tick_params(axis='both', colors='#81776d')
-
-    # Adjust label positions
-    ax.xaxis.set_label_coords(0.85, -0.1)
-    ax.yaxis.set_label_coords(-0.1, 0.85)
-
-    # Show the plot
-    plt.tight_layout()
-
-    # Prepare comparison DataFrame for actual vs predicted values
-    comparison_df = pd.DataFrame({'Actual': y_train, 'Predicted': y_pred_train})
-
-    return mse, r2, adj_r2, coef_df, fig, comparison_df
-
-
-# Create columns for dropdown and visualization
-left_col, right_col = st.columns([1, 2])  # 1 part for dropdown and metrics, 2 parts for visualization
-
-# Create dropdown in the left column
-with left_col:
-    feature_cols = X.columns.tolist()  # Get the feature columns
-    selected_features = st.multiselect(
-        "Choose features for regression:",
-        options=feature_cols,
-        default=[]  # Start with no features selected
-    )
-
-    # Initialize empty plot variable
-    fig = None
-
-    if selected_features:
-        # Call the function to get MSE, R², etc. and plot
-        mse, r2, adj_r2, coef_df, fig, comparison_df = train_and_display_linear_regression(selected_features)
-
-        # Display the model coefficients
-        st.write("**Model Coefficients:**")
-        st.write(coef_df)
-
-# Display visualization in the right column
-with right_col:
-    if fig is not None:
-        st.pyplot(fig)
-
-        # Display the metrics below the visualization
-        if mse is not None:
-            st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
-            st.write(f"**R-squared (R²):** {r2:.4f}")
-            st.write(f"**Adjusted R-squared:** {adj_r2:.4f}")
-
-        # Display the sample of actual vs predicted values
-        st.write("**Sample of Actual vs Predicted Values:**")
-        st.write(comparison_df.head())
-    else:
-        if not selected_features:
-            st.write("Please select at least one feature to see the results.")
-
-
-
-
-
 
 
 """DECISION TREE - HOW IT WORKS VISUAL DEMO"""
