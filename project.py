@@ -71,7 +71,9 @@ Maybe we'll discover that all the independent variables demonstrate a strong lin
 We'll look at three common ways to perform a regression analysis:
 * Simple Linear Regression
 * Multiple Linear Regression
-* Classification and Regression Trees (CART)
+* Regression Tree
+
+<p><em>As a bonus, we will also cover classification trees!</em></p>
 
 <h2>Simple Linear Regression</h2>
 
@@ -90,7 +92,7 @@ Where:
 * $\\beta_0$: the first coefficient, aka the intercept
 * $\\beta_1$: the coefficient of the independent variables
 * $X_i$: the independent variables used to predict $Y_i$
-* $\epsilon_i$: captures the random variation in $X_i$ that cannot be explained by $Y_i$
+* $\epsilon_i$: captures the random variation in $Y_i$ that cannot be explained by $X_i$
 
 
 When we predict the dependent variable $Y_i$, we never know what the true coefficient $\\beta_1$ is since this value is calculated on the population level. We can only estimate it based on our sample, which gives us $\hat\\beta_1$. With our $\hat\\beta_1$, we can then find $\hat{Y_i}$ using this equation:
@@ -283,9 +285,9 @@ Calculating the VIF among the various independent variables helps us reduce mult
 
 <h4> Adjusted R-squared </h4>
 
-Another challenge is introduced with multiple predictor variables: as more independent variables are added to a model, $R^2$ will always increase even when the independent variables are not useful - or worse, are detrimental - to predicting the dependent variable. To solve this problem, we use adjusted $R^2$ ($R_{adj}^2$) MLR.
+Another challenge is introduced with multiple predictor variables: as more independent variables are added to a model, $R^2$ will always increase even when the independent variables are not useful - or worse, are detrimental - to predicting the dependent variable. To solve this problem, we use adjusted $R^2$ written as $R_{adj}^2$.
 
-$R_{adj}^2$ is similar to $R^2$ in that we are still measuring how well our model predicts the dependent variable, but also takes into account the effect that adding more predictors into the model has. An additional penalty is added for adding more variables to the model. The formula for adjusted $R^2$ is:
+$R_{adj}^2$ is similar to $R^2$ in that we are still measuring how well our model predicts the dependent variable, but also takes into account the effect that adding more predictors into the model has. An additional penalty is added for adding more variables to the model. The formula for $R_{adj}^2$ is:
 """
 , unsafe_allow_html=True)
 
@@ -320,16 +322,13 @@ MLR allows us to model more complex relationships between dependent and independ
 To develop your intution on how the MLR model works in practice, we've prepared another interactive graph. In this graph, you can select which variables you would like to include in your model, and the graph plots the actual values (x) with the predicted values (y) from your chosen model. The $MSE$, $R^2$, and $R^2_{adj}$ are calculated and displayed under the graph, along as a table of some sample values.
 
 Now that you've learned how the MLR model works and the new tool $R^2_{adj}$, let's put your investigative skills to the test again. What combination of variables increases $R^2$, but decreases $R^2_{adj}$?
-
-<!-- TODO -->
-MLR GRAPH - Allows users to pick the variable they want to be included in the model and we show the result with MSE and $R_{adj}^2$.
 """
 , unsafe_allow_html=True)
 
 ########################### """MULTIPLE LINEAR REGRESSION SECTION!!!""" ###########################
 # Streamlit app
-st.header("Multiple Linear Regression")
-st.write("Select features to include in the model:")
+st.header("MLR: Find Features that Increase R Squared but Reduce R Squared Adjusted")
+# st.write("Select features to include in the model:")
 
 # Function to calculate adjusted R-squared
 def adjusted_r2(r2, n, p):
@@ -404,7 +403,7 @@ with left_col:
     selected_features = st.multiselect(
         "Choose features for regression:",
         options=feature_cols,
-        default=[]  # Start with no features selected
+        default=['age']  # Start with no features selected
     )
 
     # Initialize empty plot variable
@@ -446,94 +445,94 @@ Imagine you're looking at a more complex case, where the relationship between yo
 , unsafe_allow_html=True)
 
 
+st.markdown(
+"""
+<h2> Regression Tree Models </h2>
+
+Have you ever played 20 questions? A regression tree functions in almost a similar format, but without the 'sometimes' answer! You start with a broad question, and start narrowing down the possibilites based on the answer. Each question splits the possibilites into two subsets until you arrive at a prediction, giving you a tree-like structure.
+
+If our goal is to predict the total length of a possum, we  can use regression trees to predict this numerical outcome. Is the possum older than 5? Is the possum's head length longer than 800mm? These are some examples of questions that can help us narrow down our prediction!
+
+<!-- Regression trees also try to minimize the variance in the target variable using $MSE$. -->
+
+<!-- The classification portion of CART refers to its ability to predict categorical outcomes (class labels like "spam" or "not spam").  -->
+
+<!-- In other words, both classification and regression trees can use a combination of categorical and numerical input features, but the distinction lies in whether the target variable is categorical (for classification) or continuous (for regression). -->
+
+Regression tree models have a couple base assumptions:
+
+* The data is independent and identically distributed, meaning that all points are independent of one another.
+    * In relation to our possum dataset, we assume that the data is collected in similar conditions and each measurement does not effect other ones.
+* There is enough data in the training set to make meaningful splits and there is enough variety of data to find good splitting points.
+
+One of the main differences from models, such as linear regression, is that regression tree models do not assume that the data follows any specific distribution.
+
+<h4>Advantages</h4>
+
+* Can predict **non-parametric relationships**, or relationships where the data does not follow a normal distribution.
+* **Implicitly performs feature selection** by selecting the most important features at each split.
+* **Outliers and missing values have minimal impact on its performance**, as the model relies on thresholds rather than assumed data distributions.
+* Regression trees requires minimal supervision and **produces interpretable models**, with decision-making logic that is easy for most people to understand.
+
+<h4>Disadvantages</h4>
+
+* Regression tree models **tend to overfit the training data**, causing **high variance and low bias**, meaning that small changes in the data can lead to significantly different tree structures and heavily underperforming on new unseen data.
+    * These issues can be addressed through methods such as pruning (think of this like chopping parts of a tree that are overgrown) to prevent the tree from growing too complex. 
+    * The instability in performance can be mitigated using several decision trees and aggregating their results together (known as random forest) 
+* Regresson trees also **rely on a greedy algorithm for splitting**, which selects the best local split at each step, even if it is not globally optimal for the overall model.
+
+<h3> Base Model  </h3>
 
 
-"""DECISION TREE INTERACTIVE GRAPH SECTION - START"""
-st.title("Interactive Decision Tree Regressor")
-st.write("""
-This app allows you to interactively train a **Decision Tree Regressor** by modifying key hyperparameters:
-- Max Depth
-- Min Samples Split
-- Min Samples Leaf
-""")
+A basic classification tree contains decision nodes, branches, and their leafs which contain the prediction or classification results. We can compare these to elements of the 20 questions game:
 
-# Step 7: Create sliders for parameter selection using Streamlit    
+* <b>Decision node</b>: Decision nodes are where you split the data, based on a specific feature. It asks a yes/no question, and sends the data down the left or right branch according to the answer.
+    * Think of this as the question you get asked.
+* <b>Branch</b>: Branches connect a decision node to the next decision node or tree leaf.
+    * Based on a yes or no answer, move to another question!
+* <b>Leaf</b>: Leafs are the end points of the tree, containing the different predictions.
+    * This is the final answer, similar to the guess a 20 questions game gives you at the end!
 
-col1, col2, col3 = st.columns(3)  # Three columns for the sliders
+In the diagram below, we have a short example of a decision tree. If the age is greater than 5 (Yes), then the predicted total length of the possum is 900mm.
+"""
+, unsafe_allow_html=True)
 
-# Create sliders in each column
-with col1:
-    max_depth = st.slider("Max Depth", min_value=2, max_value=10, value=5, step=1)
-
-with col2:
-    min_samples_split = st.slider("Min Samples Split", min_value=2, max_value=10, value=2, step=1)
-
-with col3:
-    min_samples_leaf = st.slider("Min Samples Leaf", min_value=1, max_value=5, value=1, step=1)
-
-# Define a function to calculate adjusted R-squared
-def adjusted_r2(r2, n, p):
-    return 1 - (1 - r2) * (n - 1) / (n - p - 1)
-
-# Define a function to train the decision tree and display the tree
-def train_and_display_decision_tree(max_depth, min_samples_split, min_samples_leaf):
-    # Step 2: Define the Decision Tree Regressor with the chosen parameters
-    regressor = DecisionTreeRegressor(random_state=42, 
-                                      max_depth=max_depth, 
-                                      min_samples_split=min_samples_split, 
-                                      min_samples_leaf=min_samples_leaf)
-    
-    # Step 3: Fit the model with the training data
-    regressor.fit(X_train, y_train)
-    
-    # Step 4: Plot the decision tree using plot_tree with default colors
-    fig, ax = plt.subplots(figsize=(20, 10))
-    
-    plot_tree(regressor, feature_names=X_train.columns, filled=True, rounded=True, fontsize=12, ax=ax,
-              node_ids=True, impurity=False, proportion=False, precision=2)
-
-    plt.title(f"Decision Tree Regressor (max_depth={max_depth}, min_samples_split={min_samples_split}, min_samples_leaf={min_samples_leaf})",
-              fontsize=18, fontname='Helvetica', color='#333333')
-
-    # Display the plot in Streamlit
-    st.pyplot(fig)
-
-    # Step 5: Make predictions on the test data
-    y_pred = regressor.predict(X_test)
-    
-    # Step 6: Calculate performance metrics
-    mse = mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse)
-    r2 = r2_score(y_test, y_pred)
-    
-    # Calculate adjusted R-squared
-    n = len(y_test)  # number of observations
-    p = X_test.shape[1]  # number of predictors
-    adj_r2 = adjusted_r2(r2, n, p)
-    
-    # Display performance metrics in Streamlit
-    st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
-    # st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
-    st.write(f"**R-squared (R²):** {r2:.4f}")
-    st.write(f"**Adjusted R-squared:** {adj_r2:.4f}")
-    
-    # Optionally display the comparison of actual vs predicted values
-    comparison_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
-    st.write(comparison_df.head())
-
-# Call the function with current slider values
-train_and_display_decision_tree(max_depth, min_samples_split, min_samples_leaf)
+st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294825628536930376/Blank_diagram_-_Page_1.jpeg?ex=670c6bd6&is=670b1a56&hm=fe6e20b65bbfd175083143c4cf5a30df52abf215232c81cf026b85d0e1deb715&")
 
 
+st.markdown(
+"""
+<h4> Building a Regression Model </h4>
 
-"""3 SLIDERS SECTION FOR DECISION TREE"""
-st.title("Interactive Decision Tree Regressor")
-st.write("""
-This app allows you to interactively train a **Decision Tree Regressor** by modifying key hyperparameters:
-- Max Depth
-- Min Samples Split
-- Min Samples Leaf
-""")
+Splitting is an essential part of regression trees to divide data into subsets we can make predictions on. Splitting lets us narrow down what the prediction is. In general, a regression model will stop splitting when:
+
+* **All samples in a node are the same**: There’s no need to split further because all data points belong to one category or are identical.
+* **No more features are left to split on**: All available features have been exhausted.
+* **Only one data point remains in the node**: The model can't split a single data point.
+* **Further splits don’t significantly improve predictions**: Splitting doesn’t lead to better accuracy or lower errors.
+
+As a result of these factors, regression models are prone to overfitting. Overfitting occurs when a model learns the noise in the data as well as the patterns in the data. To minimize overfitting, we fine-tune our model using hyperparameters to prevent the model from getting too specific.
+
+For our model, we chose to adjust three of the most common parameters: max depth, min samples split, and min samples leaf. However, there are several more parameters available that we won't be covering in this blog. These hyperparameters help control the complexity of the tree and improve its generalization to new data.
+
+* **max_depth**: This controls how many tiers a tree can have below the initial decision node. In our visualization, this value would be 2. This limit helps prevent the tree from becoming too complex and overfitting the training data.
+* **min_samples_split**: This defines the minimum number of data points needed in a group to allow for further splitting. Once a group reaches this number, it won’t split again, and the model will make a prediction at that leaf. This keeps the model simpler.
+* **min_samples_leaf**: This sets the minimum number of data points required to create a leaf node. By increasing this number, the model becomes more reliable, ensuring that each final group formed by the tree has enough data to provide a good prediction.
+
+You may be wondering, what is the best number to pick for these parameters? You may think that we should test each hyperparameter individually and increment their values and see what is the lowest MSE that we can achieve by changing the hyperparameters on their own and then combine them to make our best model, but let's see what that does.
+
+Below are plots of each of our hyperparameters and their respective MSE values for each value of the hyperparameter incremented by 1. Based on these visualizations, what do you think are the best numbers to pick for each of the hyperparameters?
+"""
+, unsafe_allow_html=True)
+
+# """3 INDEPENDENT HYPERPARAMETERS ANALYSIS FOR DECISION TREE"""
+# st.title("Interactive Decision Tree Regressor")
+# st.write("""
+# This app allows you to interactively train a **Decision Tree Regressor** by modifying key hyperparameters:
+# - Max Depth
+# - Min Samples Split
+# - Min Samples Leaf
+# """)
 
 # Create three columns for plots
 cols = st.columns(3)
@@ -597,12 +596,162 @@ with cols[2]:
     fig_min_samples_leaf.update_traces(mode='lines+markers', line=dict(color='#fbada1'))  
     st.plotly_chart(fig_min_samples_leaf)
 
+st.markdown(
+"""
+<!-- DO WE WANT TO INLCUDE THESE? WE DIDN'T USE THIS
+* <b>max_features</b>: Sets the maximum number of features that are considered when splitting at a node. This can help reduce the complexity of your model.
+* <b>criterion</b>: This hyperparameter is used to set what impurity measure is being used to judge when to split. Some examples can be, the Gini coefficient, entropy or Mean Squared Errors which is typicaly used when doing regression trees.
+* <b>min_impurity_decrease</b>: Is set to specify the minimum impurity decrease required for a split to occur.
+-->
 
-"""DECISION TREE - HOW IT WORKS VISUAL DEMO"""
+You may have thought that by looking at the graphs that the best max_depth value was 3, min_samples_split was 6, and that the best min_sample_leaf value was 4, but this is not always the case. When optimizing decision trees (or any machine learning model) using hyperparameters, it’s common to encounter situations where the best individual hyperparameters do not yield the best overall performance when combined. Some reasons why this can happen include:
+* **Interaction Effects Between Hyperparameters:** Hyperparameters can interact in complex ways. For example, the optimal value for the max_depth of a tree may depend on the value of min_samples_split. When optimizing them individually, you might miss these interactions that would only become apparent when they are optimized together.
+2. **Overfitting or Underfitting:** The combination of hyperparameters can lead to overfitting or underfitting. One hyperparameter may be optimal for a specific range of values of another hyperparameter. For instance, a deeper tree (max_depth) might perform better with a higher minimum sample split (min_samples_split), but not with a lower one, and vice versa.
+3. **Local Optima:** When tuning hyperparameters individually, you may be stuck in a local optimum. The best setting for one hyperparameter may not align well with the best setting of another. This is especially true in complex models where the performance landscape is not smooth.
+
+To determine the optimal set of hyperparameters, we can employ a grid search, which is a systematic approach to explore a range of hyperparameter values. In other words, since we want to find the best set of hyperparameters, we want to compare every set against each other. Think about each square in the grid being a combo of hyperparameters.
+
+For our model, we tested the maximum depth of the tree with values ranging from 2 to 10, the minimum sample split from 2 to 10, and the minimum samples per leaf from 1 to 5. We  iterated through every combination of these hyperparameters, evaluating which combination produces the best regression tree based on the mean squared error (MSE).
+
+<h3> Building Intuition: Picking the Best Hyperparameters for a Decision Tree </h3>
+To build your intuition as to how the computer find the best hyperparameters to use, try finding the best combination of hyperparameters that minimize MSE. Does this match up with the best hyperparameters from the plots above?
+"""
+, unsafe_allow_html=True)
+
+# """DECISION TREE INTERACTIVE GRAPH SECTION - START"""
+# st.title("Interactive Decision Tree Regressor")
+# st.write("""
+# This app allows you to interactively train a **Decision Tree Regressor** by modifying key hyperparameters:
+# - Max Depth
+# - Min Samples Split
+# - Min Samples Leaf
+# """)
+
+col1, col2, col3 = st.columns(3)  # Three columns for the sliders
+
+# Create sliders in each column
+with col1:
+    max_depth = st.slider("Max Depth", min_value=2, max_value=10, value=5, step=1)
+
+with col2:
+    min_samples_split = st.slider("Min Samples Split", min_value=2, max_value=10, value=2, step=1)
+
+with col3:
+    min_samples_leaf = st.slider("Min Samples Leaf", min_value=1, max_value=5, value=1, step=1)
+
+# Define a function to calculate adjusted R-squared
+def adjusted_r2(r2, n, p):
+    return 1 - (1 - r2) * (n - 1) / (n - p - 1)
+
+# Define a function to train the decision tree and display the tree
+def train_and_display_decision_tree(max_depth, min_samples_split, min_samples_leaf):
+    # Step 2: Define the Decision Tree Regressor with the chosen parameters
+    regressor = DecisionTreeRegressor(random_state=42, 
+                                      max_depth=max_depth, 
+                                      min_samples_split=min_samples_split, 
+                                      min_samples_leaf=min_samples_leaf)
+    
+    # Step 3: Fit the model with the training data
+    regressor.fit(X_train, y_train)
+    
+    # Step 4: Plot the decision tree using plot_tree with default colors
+    fig, ax = plt.subplots(figsize=(20, 10))
+    
+    plot_tree(regressor, feature_names=X_train.columns, filled=True, rounded=True, fontsize=12, ax=ax,
+              node_ids=True, impurity=False, proportion=False, precision=2)
+
+    plt.title(f"Decision Tree Regressor (max_depth={max_depth}, min_samples_split={min_samples_split}, min_samples_leaf={min_samples_leaf})",
+              fontsize=18, fontname='Helvetica', color='#333333')
+
+    # Display the plot in Streamlit
+    st.pyplot(fig)
+
+    # Step 5: Make predictions on the test data
+    y_pred = regressor.predict(X_test)
+    
+    # Step 6: Calculate performance metrics
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_test, y_pred)
+    
+    # Calculate adjusted R-squared
+    n = len(y_test)  # number of observations
+    p = X_test.shape[1]  # number of predictors
+    adj_r2 = adjusted_r2(r2, n, p)
+    
+    # Display performance metrics in Streamlit
+    st.write(f"**Mean Squared Error (MSE):** {mse:.2f}")
+    # st.write(f"**Root Mean Squared Error (RMSE):** {rmse:.2f}")
+    # st.write(f"**R-squared (R²):** {r2:.4f}")
+    # st.write(f"**Adjusted R-squared:** {adj_r2:.4f}")
+    
+    # Optionally display the comparison of actual vs predicted values
+    # comparison_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+    # st.write(comparison_df.head())
+
+# Call the function with current slider values
+train_and_display_decision_tree(max_depth, min_samples_split, min_samples_leaf)
+
+
+st.markdown(
+"""
+Based on your testing, were you able to find the best hyperparameters for the model? You may have found that the best values individually did happen to lead to the lowest MSE value, but you may have also found that any min_sample_split value also led to this minimized MSE value. This is to show that it is important to optimize using a combination of these three hyperparameters rather than trying to optimize each since you may find that certain combinations of hyperparamters lead to better performace than the values you tested for in the hyperparameters individually.
+
+Selecting the appropriate hyperparameters for our model is important, but it is also vital to understand how the decision tree determines where to split the data points. For this, regression trees use MSE, the same metric we discussed in the linear regression section, to guide their decisions on features and values to split.
+
+<!-- <h4> Mean Squared Errors </h4>
+
+Like other regression models, CART also uses Mean Squared Errors or $MSE$ to find the average squared difference between the actual and predicted values. Lower $MSEs$ indicate better splitting points. 
+
+st.latex(r'''\begin{align}
+MSE = \frac{1}{n}\sum\limits_{i=1}^{n}(y_i-\bar{y})^2
+\end{align}''') -->
+
+<h4> How are appropriate splits decided? </h4>
+
+For regression trees, the model examines every possible split that can be formed based on the features and their values. This is similar to how 20 questions decided which questions are the best to ask earlier or later in the game.
+
+**Numerical Features:** The algorithm evaluates all potential split points within a numerical feature, such as the weight of possums. For example, if the weights of the possums range from 1 kg to 10 kg, the algorithm might consider various split points, such as:
+
+* Split at 3 kg: Group 1 (1 kg to 3 kg) vs. Group 2 (more than 3 kg)
+* Split at 5 kg: Group 1 (1 kg to 5 kg) vs. Group 2 (more than 5 kg)
+* Split at 7 kg: Group 1 (1 kg to 7 kg) vs. Group 2 (more than 7 kg)
+
+**Categorical Features:** The algorithm creates binary splits based on unique categories. For instance, if you have a feature "Possum Primary Fur Color" with categories such as "Grey", "Beige", and "Black", the splits could be:
+
+* "Grey" vs. "Beige and Black"
+* "Beige" vs. "Grey and Black"
+* "Black" vs. "Grey and Beige"
+
+The algorithm then calculates the MSE for each of these splits and selects the one that results in the lowest impurity.
+
+Each potential split is evaluated to find the one with the lowest impurity score. This process of finding the optimal split continues recursively to construct each decision node until one of the stopping criteria we mentioned above is met, like maximum tree depth. Now, we've finished building our regression tree model!
+
+<!-- We can evaluate how well the model performs on a test set using MSE. -->
+
+
+<h2> Classification Trees </h2>
+
+Decision trees can also be used for classification problems. Classification means that you are predicting the class that something belongs to rather than an outcome value. It functions in a similar way as regression trees except the way it splits points is based on impurity functions. The common impurity functions are Gini Index or Entropy and Information Gain.
+""", unsafe_allow_html=True)
+
+st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294825902542422016/Blank_diagram_-_Page_1_1.jpeg?ex=670c6c17&is=670b1a97&hm=17dfd75772f78f0975170ac8744c9ce794991b84d2f6a4c8479c9b11fa0a715f&")
+
+st.markdown(
+"""
+<h2>Building Intuition: How Do Classifiers Work?</h2>    
+
+To give a better understanding of what classifiers are and how they work, we start with a simple game of "Is it a possum or not?"
+
+Given an animal, how could you guess if that given animal was a possum or not through some basic questions? Answer the questions below and see what the output is. 
+"""
+, unsafe_allow_html=True)
+
+# """DECISION TREE - HOW IT WORKS VISUAL DEMO"""
 def possum_decision_tree():
-    st.title("Possum Classification Decision Tree")
+    # st.title("Possum Classification Decision Tree")
 
-    st.write("Answer the following questions to classify if the animal is a possum:")
+    st.write("Answer the following questions to classify if an animal is a possum:")
 
     # Question 1
     question1 = st.radio("Does the animal have a pointed snout?", ("Yes", "No"))
@@ -633,3 +782,85 @@ def possum_decision_tree():
 # Run the app
 if __name__ == "__main__":
     possum_decision_tree()
+
+st.markdown(
+"""
+With this example, we can start getting the basic understandings of how classification trees work and begin to understand the difference between regression where we predict numbers and classification, where we are now predicting a class.
+<h3> New Impurity Functions </h3>
+
+<h4> Gini Index/Impurity </h4>
+
+The Gini Index, or Gini Impurity, helps evaluate potential split points in a classification tree. It estimates how likely it is to misclassify a randomly chosen item. Think of it as asking, "If I pick something at random, how often would I get its label wrong?" The goal is to create splits that group similar items together, reducing the chance of mistakes. A lower Gini Index means the split did a better job of organizing the data, making it easier for the model to make accurate predictions.
+"""
+, unsafe_allow_html=True)
+
+st.latex(r'''
+Gini(D) =1-\sum\limits_{i=0}^np_i^2
+''')
+
+st.markdown(
+"""
+<center>
+<font size = "2">
+Where p<sub>i</sub> is the proportion of instances belonging to class i in the subset D.
+</font> 
+</center>
+
+<h4> Entropy </h4>
+
+Entropy measures the uncertainty or disorder within a set of data. It helps determine the best split points in a classification tree by calculating how mixed or pure the data is. Think of it as asking, "How messy is this group?" A higher entropy value means the group is more diverse, with a mix of different classes. A lower entropy value means the group is more uniform, with most items belonging to the same class. The goal is to make splits that reduce entropy, organizing the data so the model can be more accurate. 
+"""
+, unsafe_allow_html=True)
+
+st.latex(r'''
+Entropy(D) = -\sum\limits_{i=1}^np_ilog_2(p_i)
+''')
+
+st.markdown(
+"""
+<center>
+<font size="2"> 
+With p<sub>i</sub> is the proportion of instances belonging to class i and subset D
+</font>
+</center> 
+
+<h4> Information Gain </h4>
+
+After calculating entropy, we can use this in conjunction with information gain. Information Gain builds on to entropy by measuring how much entropy is reduced after a dataset is split. Think of it as asking, "How much clearer did things get after making this split?" A higher Information Gain means the split did a good job of organizing the data, creating child nodes that are more focused, with most items belonging to the same class. The goal is to make each split result in groups that are more uniform than before, helping the model make better predictions. Essentially, Information Gain tracks how much variability decreases with each split, similarly to MSE for regression.
+"""
+, unsafe_allow_html=True)
+
+st.latex(r'''
+Information Gain (D,A)= Entropy(D) - \sum\limits_{v\in Values(A)}\frac{|D_v|}{|D|}Entropy(D_v)
+''')
+
+st.markdown(
+"""
+<center>
+<font size="2">  
+Where D is the dataset, A is the atribute, D is the subset of D for which attribute A has the value, v and Values(A) are the posible values of attribute A. 
+</font>
+</center>
+
+
+<h2>Model Selection</h2>
+
+Now that we have many potential models to predict the total length of a possum, we need to narrow it down to the best model. The process of model selection is extremely important to ensure that we are choosing a model that most accurately predicts a possum length. We need to take into consideration factors such as the size of the dataset, number of predictors, model complexity, evaluation metrics, etc.
+
+Using possums as an example, we find that the best model for the current data is the MLR model. To find the best model we can initially look at the $R_{adj}^2$ of all the models. Looking first at the regression tree we find that it is constantly predicting a negative $R_{adj}^2$ value indicating that the model does a poor job in predicting possum length (it does worse than simply predicting the average of all values). While the SLR models best $R^2$ is .48 it still falls short of MLR model which predicts a $R_{adj}^2$ of .78 indicating that it has the "best" predictive power of the three.
+
+Another way to choose the best model is to compare the $MSE$ values of each model. When we compare $MSE$ for the three models, we find that the SLR model performs the worst, while the regression tree has a lower $MSE$ of 727 and $MLR$ has the best $MSE$ of 537. Therefore, the model that we should choose to solve my mystery is the MLR model.
+
+Great job, possum pals! I hope you learned a lot today during our investigation into possum body lengths. We found the best model, and can now more accurately predict possum lengths. 
+
+Signing off,
+"""
+, unsafe_allow_html=True) 
+
+st.image("https://cdn.discordapp.com/attachments/1270264700600586271/1294851252043255879/signature.png?ex=670c83b3&is=670b3233&hm=8f0c4cc0bd460f3f1f3a6f6f5d8ca565be5fa16eba56800ab709b6e9c18f4cc9&")
+
+st.markdown(
+"""
+Sherlock Possulmes
+"""
+, unsafe_allow_html=True)
