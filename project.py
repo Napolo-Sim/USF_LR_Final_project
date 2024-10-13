@@ -126,7 +126,7 @@ MSE measures the average squared error that occurs between actual and predicted 
 """, unsafe_allow_html=True)
 
 st.latex(r'''
-MSE = \frac{1}{n} \sum\limits_{i=0}^n (Y_i-\hat{Y_i})^2
+MSE = \frac{1}{n-p} \sum\limits_{i=1}^n (Y_i-\hat{Y_i})^2
 ''')
 
 st.markdown(
@@ -135,6 +135,7 @@ Where
 * $Y_i$ is the actual values of $Y_i$
 * $\hat{Y_i}$ is the predicted values of $Y_i$
 * $n$ is the number of observations
+* $p$ is the number of coefficients
 
 The difference between the actual and predicted values of $Y_i$ is squared to keep these all of these values positive, and then summed and divided by $n$ to get MSE. Using MSE, we can figure out how well each individual factor predicts the actual values of our target variable. We want to **minimize MSE** AKA minimize the distance between our predictions and the actual points in order to find our best model.
 
