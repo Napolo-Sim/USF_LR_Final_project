@@ -62,7 +62,7 @@ st.markdown(
 """
 <h2>Introduction</h2>
 
-As humans, we often use past experiences to make decisions or predictions. Maybe you've tried to guess how much a meal will cost based on the appearance of a restaurant, or estimated how tall a kid will grow based on their parent's heights. Whether you realize it or not, you are spotting patterns in past information and using them to make these predictions.
+As humans, you often use past experiences to make decisions or predictions. Maybe you've tried to guess how much a meal will cost based on the appearance of a restaurant, or estimated how tall a kid will grow based on their parent's heights. Whether you realize it or not, you are spotting patterns in past information and using them to make these predictions.
 
 We can take that same idea and apply it towards predicting the length of a possum. What factors might you consider? Its weight? Its head length? Maybe even the size of its ears? These factors can help us make a more educated guess on the length of our furry friends. However, we can actually do more than an educated guess with the help of data and code.
 
